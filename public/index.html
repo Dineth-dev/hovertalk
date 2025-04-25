@@ -21,7 +21,8 @@
             if(input.value){
                 socket.emit('chat message', {
                     user: username,
-                    message: input.value
+                    message: input.value,
+                    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit'})
                 });
                 input.value = '';
             }
@@ -29,7 +30,7 @@
 
         socket.on('chat message', function(data){
             const item = document.createElement('li');
-            item.textContent = `${data.user}: ${data.message}`;
+            item.textContent = ` [${data.timestamp}] ${data.user}: ${data.message}`;
             messages.appendChild(item);
             window.scrollTo(0, document.body.scrollHeight);
         });
