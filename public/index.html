@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>RepoChat</title>
+    <title>HoverTalk</title>
 </head>
 <body>
     <ul id="messages"></ul>
@@ -10,6 +10,7 @@
     </form>
     <script src="/socket.io/socket.io.js"></script>
     <script>
+        let username = prompt('Enter your username:');
         const socket = io();
         const form = document.getElementById('form');
         const input = document.getElementById('input');
@@ -18,14 +19,17 @@
         form.addEventListener('submit', function(e){
             e.preventDefault(); // Prevents default action of form submitting and reloading page
             if(input.value){
-                socket.emit('chat message', input.value);
+                socket.emit('chat message', {
+                    user: username,
+                    message: input.value
+                });
                 input.value = '';
             }
         });
 
-        socket.on('chat message', function(msg){
+        socket.on('chat message', function(data){
             const item = document.createElement('li');
-            item.textContent = msg;
+            item.textContent = `${data.user}: ${data.message}`;
             messages.appendChild(item);
             window.scrollTo(0, document.body.scrollHeight);
         });
