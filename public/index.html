@@ -20,7 +20,7 @@
             e.preventDefault(); // Prevents default action of form submitting and reloading page
             if(input.value){
                 socket.emit('chat message', {
-                    user: username,
+                    username: username,
                     message: input.value,
                     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit'})
                 });
