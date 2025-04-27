@@ -30,7 +30,7 @@
 
         socket.on('chat message', function(data){
             const item = document.createElement('li');
-            item.textContent = ` [${data.timestamp}] ${data.user}: ${data.message}`;
+            item.textContent = ` [${data.timestamp}] ${data.username}: ${data.message}`;
             messages.appendChild(item);
             window.scrollTo(0, document.body.scrollHeight);
         });
