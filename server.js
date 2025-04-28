@@ -11,8 +11,8 @@ app.use(express.static('public'));
 
 io.on('connection', (socket) => {
     console.log('A user connected');
-    socket.on('send chat message', async (data) => {
-        io.emit('broadcast chat message', data); // Sends message to all connected clients
+    socket.on('sendChatMessage', async (data) => {
+        io.emit('broadcastChatMessage', data); // Sends message to all connected clients
         try{
             await pool.query('INSERT INTO messages (username,message, timestamp) VALUES ($1,$2, $3)', [data.username, data.message, data.timestamp]);
         } catch(err){
@@ -22,9 +22,9 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('User disconnected');
     });
-    socket.on('get chat history', async () => {
+    socket.on('getChatHistory', async () => {
         const result = await pool.query('SELECT * FROM messages ORDER BY timestamp ASC');
-        socket.emit('chat history', result.rows);
+        socket.emit('chatHistory', result.rows);
     });
 });
 

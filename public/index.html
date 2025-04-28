@@ -16,9 +16,9 @@
         const input = document.getElementById('input');
         const messages = document.getElementById('messages');
         
-        socket.emit('get chat history');
+        socket.emit('getChatHistory');
         
-        socket.on('chat history', function(messages){
+        socket.on('chatHistory', function(messages){
             const messageContainer = document.getElementById('messages');
             messages.forEach(message => {
                 const li = document.createElement('li');
@@ -31,7 +31,7 @@
         form.addEventListener('submit', function(e){
             e.preventDefault(); // Prevents default action of form submitting and reloading page
             if(input.value){
-                socket.emit('send chat message', {
+                socket.emit('sendChatMessage', {
                     username: username,
                     message: input.value,
                     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit'})
@@ -40,7 +40,7 @@
             }
         });
 
-        socket.on('broadcast chat message', function(data){
+        socket.on('broadcastChatMessage', function(data){
             const item = document.createElement('li');
             item.textContent = ` [${data.timestamp}] ${data.username}: ${data.message}`;
             messages.appendChild(item);
