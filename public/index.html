@@ -16,7 +16,7 @@
         const input = document.getElementById('input');
         const messages = document.getElementById('messages');
         
-        socket.emit('chat history');
+        socket.emit('get chat history');
         
         socket.on('chat history', function(messages){
             const messageContainer = document.getElementById('messages');
