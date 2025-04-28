@@ -19,11 +19,13 @@
         socket.emit('chat history');
         
         socket.on('chat history', function(messages){
+            const messageContainer = document.getElementById('messages');
             messages.forEach(message => {
                 const li = document.createElement('li');
                 li.textContent = `[${message.timestamp}] ${message.username}: ${message.message}`;
                 document.getElementById('messages').appendChild(li);
             });
+            messageContainer.scrollTop = messageContainer.scrollHeight;
         })
 
         form.addEventListener('submit', function(e){
