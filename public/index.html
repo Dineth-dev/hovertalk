@@ -15,6 +15,16 @@
         const form = document.getElementById('form');
         const input = document.getElementById('input');
         const messages = document.getElementById('messages');
+        
+        socket.emit('chat history');
+        
+        socket.on('chat history', function(messages){
+            messages.forEach(message => {
+                const li = document.createElement('li');
+                li.textContent = `[${message.timestamp}] ${message.username}: ${message.message}`;
+                document.getElementById('messages').appendChild(li);
+            });
+        })
 
         form.addEventListener('submit', function(e){
             e.preventDefault(); // Prevents default action of form submitting and reloading page

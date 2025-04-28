@@ -22,6 +22,10 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('User disconnected');
     });
+    socket.on('chat history', async () => {
+        const result = await pool.query('SELECT * FROM messages ORDER BY timestamp ASC');
+        socket.emit('chat history', result.rows);
+    });
 });
 
 const PORT = process.env.PORT || 3000;
