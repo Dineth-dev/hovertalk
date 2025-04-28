@@ -11,8 +11,8 @@ app.use(express.static('public'));
 
 io.on('connection', (socket) => {
     console.log('A user connected');
-    socket.on('chat message', async (data) => {
-        io.emit('chat message', data);
+    socket.on('send chat message', async (data) => {
+        io.emit('broadcast chat message', data); // Sends message to all connected clients
         try{
             await pool.query('INSERT INTO messages (username,message, timestamp) VALUES ($1,$2, $3)', [data.username, data.message, data.timestamp]);
         } catch(err){
