@@ -12,6 +12,7 @@ app.use(express.static('public'));
 io.on('connection', (socket) => {
     console.log('A user connected');
     socket.on('userJoined', (username) => {
+        socket.username = username;
         io.emit('userNotification', `${username} has joined the chat`);
     })
     socket.on('sendChatMessage', async (data) => {
