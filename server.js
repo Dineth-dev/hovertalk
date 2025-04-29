@@ -11,6 +11,9 @@ app.use(express.static('public'));
 
 io.on('connection', (socket) => {
     console.log('A user connected');
+    socket.on('userJoined', (username) => {
+        io.emit('userNotification', `${username} has joined the chat`);
+    })
     socket.on('sendChatMessage', async (data) => {
         io.emit('broadcastChatMessage', data); // Sends message to all connected clients
         try{
