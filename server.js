@@ -23,6 +23,9 @@ io.on('connection', (socket) => {
         }
     });
     socket.on('disconnect', () => {
+        if(socket.username){
+            io.emit('userNotification', `${socket.username} has left the chat`);
+        }
         console.log('User disconnected');
     });
     socket.on('getChatHistory', async () => {
