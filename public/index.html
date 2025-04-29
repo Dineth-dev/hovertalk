@@ -32,6 +32,8 @@
         socket.on('userNotification', function(message){
             const item = document.createElement('li');
             item.textContent = message;
+            item.style.fontStyle = 'italic';
+            item.style.color = '#666';
             messages.appendChild(item);
         });
 
