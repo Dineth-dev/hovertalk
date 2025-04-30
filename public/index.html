@@ -15,6 +15,7 @@
         socket.emit('userJoined', username);
         const form = document.getElementById('form');
         const input = document.getElementById('input');
+        input.focus();
         const messages = document.getElementById('messages');
         
         socket.emit('getChatHistory');
