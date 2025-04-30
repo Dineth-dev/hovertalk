@@ -10,7 +10,8 @@ app.use(express.static('public'));
 
 
 io.on('connection', (socket) => {
-    console.log('A user connected');
+    const connectTime = new Date().toLocaleString();
+    console.log(`User connected at ${connectTime}`);
     socket.on('userJoined', (username) => {
         socket.username = username;
         io.emit('userNotification', `${username} has joined the chat`);
