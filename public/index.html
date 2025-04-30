@@ -39,10 +39,11 @@
 
         form.addEventListener('submit', function(e){
             e.preventDefault(); // Prevents default action of form submitting and reloading page
-            if(input.value){
+            const trimmedMessage = input.value.trim();
+            if(trimmedMessage){
                 socket.emit('sendChatMessage', {
                     username: username,
-                    message: input.value,
+                    message: trimmedMessage,
                     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit'})
                 });
                 input.value = '';
