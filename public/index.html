@@ -10,53 +10,55 @@
     </form>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        let username = prompt('Enter your username:');
-        const socket = io();
-        socket.emit('userJoined', username);
-        const form = document.getElementById('form');
-        const input = document.getElementById('input');
-        input.focus();
-        const messages = document.getElementById('messages');
-        
-        socket.emit('getChatHistory');
-        
-        socket.on('chatHistory', function(messages){
-            const messageContainer = document.getElementById('messages');
-            messages.forEach(message => {
-                const li = document.createElement('li');
-                li.textContent = `[${message.timestamp}] ${message.username}: ${message.message}`;
-                document.getElementById('messages').appendChild(li);
-            });
-            messageContainer.scrollTop = messageContainer.scrollHeight;
-        })
-
-        socket.on('userNotification', function(message){
-            const item = document.createElement('li');
-            item.textContent = message;
-            item.style.fontStyle = 'italic';
-            item.style.color = '#666';
-            messages.appendChild(item);
-        });
-
-        form.addEventListener('submit', function(e){
-            e.preventDefault(); // Prevents default action of form submitting and reloading page
-            const trimmedMessage = input.value.trim();
-            if(trimmedMessage){
-                socket.emit('sendChatMessage', {
-                    username: username,
-                    message: trimmedMessage,
-                    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit'})
+        document.addEventListener('DOMContentLoaded', () => {
+            let username = prompt('Enter your username:');
+            const socket = io();
+            socket.emit('userJoined', username);
+            const form = document.getElementById('form');
+            const input = document.getElementById('input');
+            input.focus();
+            const messages = document.getElementById('messages');
+            
+            socket.emit('getChatHistory');
+            
+            socket.on('chatHistory', function(messages){
+                const messageContainer = document.getElementById('messages');
+                messages.forEach(message => {
+                    const li = document.createElement('li');
+                    li.textContent = `[${message.timestamp}] ${message.username}: ${message.message}`;
+                    document.getElementById('messages').appendChild(li);
                 });
-                input.value = '';
-            }
-        });
+                messageContainer.scrollTop = messageContainer.scrollHeight;
+            })
 
-        socket.on('broadcastChatMessage', function(data){
-            const item = document.createElement('li');
-            item.textContent = ` [${data.timestamp}] ${data.username}: ${data.message}`;
-            messages.appendChild(item);
-            window.scrollTo(0, document.body.scrollHeight);
-        });
+            socket.on('userNotification', function(message){
+                const item = document.createElement('li');
+                item.textContent = message;
+                item.style.fontStyle = 'italic';
+                item.style.color = '#666';
+                messages.appendChild(item);
+            });
+
+            form.addEventListener('submit', function(e){
+                e.preventDefault(); // Prevents default action of form submitting and reloading page
+                const trimmedMessage = input.value.trim();
+                if(trimmedMessage){
+                    socket.emit('sendChatMessage', {
+                        username: username,
+                        message: trimmedMessage,
+                        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit'})
+                    });
+                    input.value = '';
+                }
+            });
+
+            socket.on('broadcastChatMessage', function(data){
+                const item = document.createElement('li');
+                item.textContent = ` [${data.timestamp}] ${data.username}: ${data.message}`;
+                messages.appendChild(item);
+                window.scrollTo(0, document.body.scrollHeight);
+            });
+    });
     </script>
 </body>
 </html>
