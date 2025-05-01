@@ -6,6 +6,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 const pool = require('./db');
+
 app.use(express.static('public'));
 
 app.use((req, res) => {
