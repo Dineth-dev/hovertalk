@@ -8,6 +8,9 @@ const io = new Server(server);
 const pool = require('./db');
 app.use(express.static('public'));
 
+app.use((req, res) => {
+    res.status(404).send('404: Page not found');
+}); 
 
 io.on('connection', (socket) => {
     const connectTime = new Date().toLocaleString();
