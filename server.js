@@ -1,11 +1,29 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
-
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 const pool = require('./db');
+
+app.get('/api/messages', async(req, res) => {
+    try{
+        const response = await fetch('https://gbdkepsurtoncfqhmogx.supabase.co/rest/v1/messages?select=*', {
+            headers: {
+                apikey: process.env.SUPABASE_ANON_KEY,
+                Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json'
+            }
+        })
+        const data = await response.json();
+        if(!response.ok){
+            throw new Error(data.message);
+        }
+        res.json(data);
+    }catch(error){
+        console.error('Fetch error: ', err.message);
+    }
+});
 
 app.use(express.static('public'));
 
@@ -44,3 +62,5 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 })
+
+module.exports = app;
