@@ -6,22 +6,26 @@ const server = http.createServer(app);
 const io = new Server(server);
 const pool = require('./db');
 
+async function fetchChatHistory(){
+    const response = await fetch('https://gbdkepsurtoncfqhmogx.supabase.co/rest/v1/messages?select=*', {
+        headers: {
+            apikey: process.env.SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json'
+        }
+    })
+    const data = response.json();
+    if(!response.ok) throw new Error(data.message || 'Error fetching message');
+    return data;
+}
+
 app.get('/api/messages', async(req, res) => {
     try{
-        const response = await fetch('https://gbdkepsurtoncfqhmogx.supabase.co/rest/v1/messages?select=*', {
-            headers: {
-                apikey: process.env.SUPABASE_ANON_KEY,
-                Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
-                'Content-Type': 'application/json'
-            }
-        })
-        const data = await response.json();
-        if(!response.ok){
-            throw new Error(data.message);
-        }
+        const data = await fetchChatHistory();
         res.json(data);
     }catch(error){
         console.error('Fetch error: ', err.message);
+        res.status(500).json({error: err.message});
     }
 });
 
@@ -38,14 +42,37 @@ io.on('connection', (socket) => {
         socket.username = username;
         io.emit('userNotification', `${username} has joined the chat`);
     })
-    socket.on('sendChatMessage', async (data) => {
+    socket.on('sendChatMessage', async(data) => {
         io.emit('broadcastChatMessage', data); // Sends message to all connected clients
-        try{
-            await pool.query('INSERT INTO messages (username,message, timestamp) VALUES ($1,$2, $3)', [data.username, data.message, data.timestamp]);
-        } catch(err){
-            console.error('Database insert error: ', err);
+        try {
+            const response = await fetch(
+                'https://gbdkepsurtoncfqhmogx.supabase.co/rest/v1/messages',
+                {
+                method: 'POST',
+                headers: {
+                    apikey: process.env.SUPABASE_ANON_KEY,
+                    Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
+                    'Content-Type': 'application/json',
+                    Prefer: 'return=representation',
+                },
+                body: JSON.stringify([
+                    {
+                    username: data.username,
+                    message: data.message,
+                    timestamp: data.timestamp,
+                    },
+                ]),
+                }
+            );
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to insert message');
+            }
+        } catch (err) {
+        console.error('Insert error:', err.message);
         }
     });
+    
     socket.on('disconnect', () => {
         if(socket.username){
             io.emit('userNotification', `${socket.username} has left the chat`);
@@ -53,8 +80,12 @@ io.on('connection', (socket) => {
         console.log('User disconnected');
     });
     socket.on('getChatHistory', async () => {
-        const result = await pool.query('SELECT * FROM messages ORDER BY timestamp ASC');
-        socket.emit('chatHistory', result.rows);
+        try{
+            const data = await fetchChatHistory();
+            socket.emit('chatHistory', data);
+        }catch(err){
+            console.error('Fetch chat history error:', err.message);
+        }
     });
 });
 
