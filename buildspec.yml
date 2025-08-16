@@ -13,7 +13,7 @@ phases:
     commands:
       - npm run build
       - npm test
-  post_buld:
+  post_build:
     commands:
       - echo "Build completed"
 artifacts:
